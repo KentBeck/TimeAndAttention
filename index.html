@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <script>
-    function timeString(now) {
-        return now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-    }
+    (function () {
+        const TIME_STRING_OPTIONS = {
+            hour: '2-digit',
+            minute:'2-digit',
+            second:'2-digit'
+        }
+        function updateTitle() {
+            const date = new Date();
+            window.document.title = date.toLocaleTimeString([], TIME_STRING_OPTIONS);
+            setTimeout(updateTitle, 1000 - date.getTime() % 1000);
+        }
 
-    function updateTitle() {
-        window.document.title = timeString(new Date());
-    }
-
-    setInterval(updateTitle, 1000);
+        updateTitle();
+    })();
 </script>
 <html>
 <body>

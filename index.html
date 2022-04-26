@@ -1,16 +1,6 @@
 <!DOCTYPE html>
-<script>
-    function timeString(now) {
-        return now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-    }
-
-    function updateTitle() {
-        window.document.title = timeString(new Date());
-    }
-
-    setInterval(updateTitle, 1000);
-</script>
 <html>
+<head><link type="image/x-icon" rel="shortcut icon"></head>
 <body>
 
 <h1>The time will show up in the title tab</h1>
@@ -19,4 +9,46 @@
 <p>Self testing results: green</p>
 
 </body>
+<script>
+    const canvas = document.createElement("canvas");
+    canvas.width = 32;
+    canvas.height = 32;
+
+    const link = document.querySelector("head link[rel='shortcut icon']");
+
+    function timeString(now) {
+        return now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    }
+
+    function generateFavicon(now) {
+        const phiHour = 2 * Math.PI * now.getHours() / 24;
+        const phiMinute = 2 * Math.PI * now.getMinutes() / 60;
+
+        const dim = canvas.width;
+        const halfDim = 0.5 * dim;
+        const shortDim = 0.25 * dim;
+
+        var ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, dim, dim);
+
+        [[phiHour, shortDim], [phiMinute, halfDim]].forEach(([angle, radius]) => {
+            ctx.beginPath();
+            ctx.moveTo(halfDim, halfDim);
+            ctx.lineTo(halfDim + radius * Math.sin(angle), halfDim - radius * Math.cos(angle));
+            ctx.stroke();
+        });
+
+        return canvas.toDataURL("image/x-icon");
+    }
+
+    function update() {
+        const now = new Date();
+
+        link.href = generateFavicon(now);
+        window.document.title = timeString(now);
+    }
+
+    setInterval(update, 1000);
+    update();
+</script>
 </html>

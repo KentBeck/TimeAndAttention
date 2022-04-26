@@ -8,15 +8,39 @@
         window.document.title = timeString(new Date());
     }
 
-    setInterval(updateTitle, 1000);
+    function generateOptions(low, high, obj, pad) {
+        for (var i = low; i <= high; i++) {
+            if (i < 10 && pad) pad = '0';
+            else pad = '';
+            obj.add(new Option(pad+i, i));
+        }
+    }
+
+    function initialize() {
+        setInterval(updateTitle, 1000);
+
+        generateOptions(1, 12, document.forms[0].elements['hour']);
+        generateOptions(0, 59, document.forms[0].elements['minute'], true);
+    }
 </script>
 <html>
-<body>
+<body onload="initialize()">
 
 <h1>The time will show up in the title tab</h1>
 <p>This app thanks to Kent Beck & ...</p>
 
 <p>Self testing results: green</p>
+
+<form>
+    Select meeting time:
+    <select id="hour" name="hour"></select>
+    <strong>:</strong>
+    <select id="minute" name="minute"></select>
+    <select id="meridiem" name="meridiem">
+        <option value="pm">pm</option>
+        <option value="am">am</option>
+    </select>
+</form>
 
 </body>
 </html>

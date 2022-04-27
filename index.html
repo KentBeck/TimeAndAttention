@@ -17,6 +17,7 @@
             title = '\u26a0 '+ title +' \u26a0';
         }
 
+        generateFavicon();
         window.document.title = title;
     }
 
@@ -73,13 +74,12 @@
 
     function initialize() {
         g_meeting_time = null;
-        updateTitle();
-        setInterval(updateTitle, 1000);
 
         generateOptions(1, 12, document.forms[0].elements['hour']);
         generateOptions(0, 59, document.forms[0].elements['minute'], true);
 
-        generateFavicon();
+        updateTitle();
+        setInterval(updateTitle, 1000);
     }
 </script>
 </head>

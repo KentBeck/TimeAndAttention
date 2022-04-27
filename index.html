@@ -1,26 +1,57 @@
 <!DOCTYPE html>
 <html>
-<head><link type="image/x-icon" rel="shortcut icon"></head>
-<body>
-
-<h1>The time will show up in the title tab</h1>
-<p>This app thanks to Kent Beck & ...</p>
-
-<p>Self testing results: green</p>
-
-</body>
+<head>
+<link type="image/x-icon" rel="shortcut icon" />
 <script>
-    const canvas = document.createElement("canvas");
-    canvas.width = 32;
-    canvas.height = 32;
-
-    const link = document.querySelector("head link[rel='shortcut icon']");
-
     function timeString(now) {
         return now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
     }
 
-    function generateFavicon(now) {
+    function updateTitle() {
+        var title = timeString(new Date());
+        var time_remaining = g_meeting_time - new Date();
+
+        /* Add warning signs if meeting is <= 15 minutes away! */
+        if (time_remaining > 0 &&
+                time_remaining <= 900000) {
+            title = '\u26a0 '+ title +' \u26a0';
+        }
+
+        generateFavicon();
+        window.document.title = title;
+    }
+
+    function setMeetingTime() {
+        var date = new Date();
+
+        g_meeting_time = new Date(
+                date.getFullYear(),
+                date.getMonth(),
+                date.getDate(),
+                Number(document.forms[0].elements['hour'].value) +
+                        Number(document.forms[0].elements['meridiem'].value),
+                Number(document.forms[0].elements['minute'].value),
+        );
+
+        updateTitle();
+    }
+
+    function generateOptions(low, high, obj, pad) {
+        for (var i = low; i <= high; i++) {
+            if (i < 10 && pad) pad = '0';
+            else pad = '';
+            obj.add(new Option(pad+i, i));
+        }
+    }
+
+    function generateFavicon() {
+        var now = new Date();
+
+        const canvas = document.createElement("canvas");
+        canvas.width = 32;
+        canvas.height = 32;
+
+        const link = document.querySelector("head link[rel='shortcut icon']");
         const phiHour = 2 * Math.PI * (now.getHours() % 12) / 12;
         const phiMinute = 2 * Math.PI * now.getMinutes() / 60;
 
@@ -38,17 +69,37 @@
             ctx.stroke();
         });
 
-        return canvas.toDataURL("image/x-icon");
+        link.href = canvas.toDataURL("image/x-icon");
     }
 
-    function update() {
-        const now = new Date();
+    function initialize() {
+        g_meeting_time = null;
 
-        link.href = generateFavicon(now);
-        window.document.title = timeString(now);
+        generateOptions(1, 12, document.forms[0].elements['hour']);
+        generateOptions(0, 59, document.forms[0].elements['minute'], true);
+
+        updateTitle();
+        setInterval(updateTitle, 1000);
     }
-
-    setInterval(update, 1000);
-    update();
 </script>
+</head>
+<body onload="initialize()">
+
+<h1>The time will show up in the title tab</h1>
+<p>This app thanks to Kent Beck & ...</p>
+
+<p>Self testing results: green</p>
+
+<form>
+    Select meeting time:
+    <select id="hour" name="hour" onchange="setMeetingTime()"></select>
+    <strong>:</strong>
+    <select id="minute" name="minute" onchange="setMeetingTime()"></select>
+    <select id="meridiem" name="meridiem" onchange="setMeetingTime()">
+        <option value="12">pm</option>
+        <option value="0">am</option>
+    </select>
+</form>
+
+</body>
 </html>

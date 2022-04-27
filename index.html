@@ -8,8 +8,9 @@
         var title = timeString(new Date());
         var time_remaining = g_meeting_time - new Date();
 
+        /* Add warning signs if meeting is <= 15 minutes away! */
         if (time_remaining > 0 &&
-                time_remaining < 900000) {
+                time_remaining <= 900000) {
             title = '\u26a0 '+ title +' \u26a0';
         }
 

@@ -21,7 +21,7 @@
     }
 
     function generateFavicon(now) {
-        const phiHour = 2 * Math.PI * now.getHours() / 24;
+        const phiHour = 2 * Math.PI * (now.getHours() % 12) / 12;
         const phiMinute = 2 * Math.PI * now.getMinutes() / 60;
 
         const dim = canvas.width;

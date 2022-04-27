@@ -5,7 +5,30 @@
     }
 
     function updateTitle() {
-        window.document.title = timeString(new Date());
+        var title = timeString(new Date());
+        var time_remaining = g_meeting_time - new Date();
+
+        if (time_remaining > 0 &&
+                time_remaining < 900000) {
+            title = '\u26a0 '+ title +' \u26a0';
+        }
+
+        window.document.title = title;
+    }
+
+    function setMeetingTime() {
+        var date = new Date();
+
+        g_meeting_time = new Date(
+                date.getFullYear(),
+                date.getMonth(),
+                date.getDate(),
+                Number(document.forms[0].elements['hour'].value) +
+                        Number(document.forms[0].elements['meridiem'].value),
+                Number(document.forms[0].elements['minute'].value),
+        );
+
+        updateTitle();
     }
 
     function generateOptions(low, high, obj, pad) {
@@ -17,6 +40,8 @@
     }
 
     function initialize() {
+        g_meeting_time = null;
+        updateTitle();
         setInterval(updateTitle, 1000);
 
         generateOptions(1, 12, document.forms[0].elements['hour']);
@@ -33,12 +58,12 @@
 
 <form>
     Select meeting time:
-    <select id="hour" name="hour"></select>
+    <select id="hour" name="hour" onchange="setMeetingTime()"></select>
     <strong>:</strong>
-    <select id="minute" name="minute"></select>
-    <select id="meridiem" name="meridiem">
-        <option value="pm">pm</option>
-        <option value="am">am</option>
+    <select id="minute" name="minute" onchange="setMeetingTime()"></select>
+    <select id="meridiem" name="meridiem" onchange="setMeetingTime()">
+        <option value="12">pm</option>
+        <option value="0">am</option>
     </select>
 </form>
 

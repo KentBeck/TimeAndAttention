@@ -1,0 +1,19 @@
+{
+
+    "manifest_version": 2,
+    "name": "set-time-in-header",
+    "version": "1.0",
+  
+    "content_scripts": [
+      {
+        "matches": [
+            "https://meet.google.com/*",
+            "https://*.zoom.us/*",
+            "https://teams.microsoft.com/*"
+          ],
+        "js": ["set-time-in-header.js"]
+      }
+    ]
+  
+  }
+  

@@ -22,6 +22,10 @@
 
         const link = document.querySelector("head link[rel='shortcut icon']");
 
+        function getClockColor () {
+            return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? '#fff' : '#000';
+        }
+
         function generateFavicon(now) {
             const phiHour = 2 * Math.PI * (now.getHours() % 12) / 12;
             const phiMinute = 2 * Math.PI * now.getMinutes() / 60;
@@ -37,6 +41,7 @@
                 ctx.beginPath();
                 ctx.moveTo(halfDim, halfDim);
                 ctx.lineTo(halfDim + radius * Math.sin(angle), halfDim - radius * Math.cos(angle));
+                ctx.strokeStyle = getClockColor();
                 ctx.stroke();
             });
 
@@ -46,8 +51,8 @@
         function update() {
             const now = new Date();
             setTimeout(update, 1000 - now.getTime() % 1000); // schedule the next tick first.
-            link.href = generateFavicon(now);
             window.document.title = now.toLocaleTimeString([], TIME_STRING_OPTIONS);
+            link.href = generateFavicon(now);
         }
 
         update();

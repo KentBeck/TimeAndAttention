@@ -45,9 +45,9 @@
 
         function update() {
             const now = new Date();
-            setTimeout(update, 1000 - date.getTime() % 1000); // schedule the next tick first.
+            setTimeout(update, 1000 - now.getTime() % 1000); // schedule the next tick first.
             link.href = generateFavicon(now);
-            window.document.title = date.toLocaleTimeString([], TIME_STRING_OPTIONS);
+            window.document.title = now.toLocaleTimeString([], TIME_STRING_OPTIONS);
         }
 
         update();

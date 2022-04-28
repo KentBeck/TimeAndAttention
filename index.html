@@ -1,21 +1,6 @@
 <!DOCTYPE html>
-<script>
-    (function () {
-        const TIME_STRING_OPTIONS = {
-            hour: '2-digit',
-            minute:'2-digit',
-            second:'2-digit'
-        }
-        function updateTitle() {
-            const date = new Date();
-            window.document.title = date.toLocaleTimeString([], TIME_STRING_OPTIONS);
-            setTimeout(updateTitle, 1000 - date.getTime() % 1000);
-        }
-
-        updateTitle();
-    })();
-</script>
 <html>
+<head><link type="image/x-icon" rel="shortcut icon"></head>
 <body>
 
 <h1>The time will show up in the title tab</h1>
@@ -24,4 +9,48 @@
 <p>Self testing results: green</p>
 
 </body>
+<script>
+    (function () {
+        const TIME_STRING_OPTIONS = {
+            hour: '2-digit',
+            minute:'2-digit',
+            second:'2-digit'
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = 32;
+        canvas.height = 32;
+
+        const link = document.querySelector("head link[rel='shortcut icon']");
+
+        function generateFavicon(now) {
+            const phiHour = 2 * Math.PI * (now.getHours() % 12) / 12;
+            const phiMinute = 2 * Math.PI * now.getMinutes() / 60;
+
+            const dim = canvas.width;
+            const halfDim = 0.5 * dim;
+            const shortDim = 0.25 * dim;
+
+            var ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, dim, dim);
+
+            [[phiHour, shortDim], [phiMinute, halfDim]].forEach(([angle, radius]) => {
+                ctx.beginPath();
+                ctx.moveTo(halfDim, halfDim);
+                ctx.lineTo(halfDim + radius * Math.sin(angle), halfDim - radius * Math.cos(angle));
+                ctx.stroke();
+            });
+
+            return canvas.toDataURL("image/x-icon");
+        }
+
+        function update() {
+            const now = new Date();
+            setTimeout(update, 1000 - date.getTime() % 1000); // schedule the next tick first.
+            link.href = generateFavicon(now);
+            window.document.title = date.toLocaleTimeString([], TIME_STRING_OPTIONS);
+        }
+
+        update();
+    })();
+</script>
 </html>

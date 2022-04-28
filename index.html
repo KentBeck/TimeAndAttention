@@ -10,45 +10,52 @@
 
 </body>
 <script>
-    const canvas = document.createElement("canvas");
-    canvas.width = 32;
-    canvas.height = 32;
+    (function () {
+        const TIME_STRING_OPTIONS = {
+            hour: '2-digit',
+            minute:'2-digit',
+            second:'2-digit'
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = 32;
+        canvas.height = 32;
 
-    const link = document.querySelector("head link[rel='shortcut icon']");
+        const link = document.querySelector("head link[rel='shortcut icon']");
 
-    function timeString(now) {
-        return now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-    }
+        function getClockColor () {
+            return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? '#fff' : '#000';
+        }
 
-    function generateFavicon(now) {
-        const phiHour = 2 * Math.PI * (now.getHours() % 12) / 12;
-        const phiMinute = 2 * Math.PI * now.getMinutes() / 60;
+        function generateFavicon(now) {
+            const phiHour = 2 * Math.PI * (now.getHours() % 12) / 12;
+            const phiMinute = 2 * Math.PI * now.getMinutes() / 60;
 
-        const dim = canvas.width;
-        const halfDim = 0.5 * dim;
-        const shortDim = 0.25 * dim;
+            const dim = canvas.width;
+            const halfDim = 0.5 * dim;
+            const shortDim = 0.25 * dim;
 
-        var ctx = canvas.getContext("2d");
-        ctx.clearRect(0, 0, dim, dim);
+            var ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, dim, dim);
 
-        [[phiHour, shortDim], [phiMinute, halfDim]].forEach(([angle, radius]) => {
-            ctx.beginPath();
-            ctx.moveTo(halfDim, halfDim);
-            ctx.lineTo(halfDim + radius * Math.sin(angle), halfDim - radius * Math.cos(angle));
-            ctx.stroke();
-        });
+            [[phiHour, shortDim], [phiMinute, halfDim]].forEach(([angle, radius]) => {
+                ctx.beginPath();
+                ctx.moveTo(halfDim, halfDim);
+                ctx.lineTo(halfDim + radius * Math.sin(angle), halfDim - radius * Math.cos(angle));
+                ctx.strokeStyle = getClockColor();
+                ctx.stroke();
+            });
 
-        return canvas.toDataURL("image/x-icon");
-    }
+            return canvas.toDataURL("image/x-icon");
+        }
 
-    function update() {
-        const now = new Date();
+        function update() {
+            const now = new Date();
+            setTimeout(update, 1000 - now.getTime() % 1000); // schedule the next tick first.
+            window.document.title = now.toLocaleTimeString([], TIME_STRING_OPTIONS);
+            link.href = generateFavicon(now);
+        }
 
-        link.href = generateFavicon(now);
-        window.document.title = timeString(now);
-    }
-
-    setInterval(update, 1000);
-    update();
+        update();
+    })();
 </script>
 </html>
